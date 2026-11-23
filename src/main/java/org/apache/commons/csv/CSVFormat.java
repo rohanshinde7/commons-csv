@@ -2450,12 +2450,7 @@ public final class CSVFormat implements Serializable {
                 if (pos > start) {
                     appendable.append(charSeq, start, pos);
                 }
-                if (isLf) {
-                    c = 'n';
-                } else if (isCr) {
-                    c = 'r';
-                }
-                escape(c, appendable);
+                escapeLineBreak(c, appendable);
                 if (isDelimiterStart) {
                     for (int i = 1; i < delimLength; i++) {
                         pos++;
@@ -2473,6 +2468,17 @@ public final class CSVFormat implements Serializable {
         }
     }
 
+    private void escapeLineBreak(final char c, final Appendable appendable) throws IOException {
+        char escapedChar = c;
+
+        if (c == Constants.LF) {
+            escapedChar = 'n';
+        } else if (c == Constants.CR) {
+            escapedChar = 'r';
+        }
+
+        escape(escapedChar, appendable);
+    }
     /*
      * This method must only be called if escaping is enabled, otherwise can throw exceptions.
      */
