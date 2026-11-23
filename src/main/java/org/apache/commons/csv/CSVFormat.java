@@ -2522,8 +2522,12 @@ public final class CSVFormat implements Serializable {
                     indexOfDelimiterPrefix(String.valueOf((char) c) + new String(lookAheadBuffer, 0, lookAheadCount), delimArray, delimLength) == 0) {
                 straddling = true;
             }
-            if (isCr || isLf || c == escape || quoteSet && c == quote || isDelimiterStart || isComment || straddling) {
-                // write out segment up until this char
+            final boolean isLineBreak = isCr || isLf;
+            final boolean isSpecialCharacter = c == escape || (quoteSet && c == quote);
+            final boolean needsEscaping = isLineBreak || isSpecialCharacter
+                    || isDelimiterStart || isComment || straddling;
+
+            if (needsEscaping) {         // write out segment up until this char
                 if (pos > start) {
                     append(builder.substring(start, pos), appendable);
                     builder.setLength(0);
